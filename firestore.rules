@@ -1,0 +1,43 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // Default deny
+    match /{document=**} {
+      allow read, write: if false;
+    }
+
+    // Global helpers
+    function isSignedIn() { return request.auth != null; }
+    function isValidId(id) { return id is string && id.size() <= 128 && id.matches('^[a-zA-Z0-9_\\-]+$'); }
+    function isEmailVerified() { return request.auth.token.email_verified == true; }
+    function isOwner(userId) { return request.auth.uid == userId; }
+
+    function isValidReview(data) {
+      return data.animeId is string && data.animeId.size() <= 64 &&
+             data.userId == request.auth.uid &&
+             data.username is string && data.username.size() <= 100 &&
+             data.rating is number && data.rating >= 1 && data.rating <= 5 &&
+             data.comment is string && data.comment.size() <= 1000 &&
+             data.createdAt == request.time;
+    }
+
+    match /reviews/{reviewId} {
+      allow read: if true; // Publicly readable reviews
+      allow create: if isSignedIn() && isEmailVerified() && isValidReview(request.resource.data);
+      allow update: if false; // Reviews are immutable in this design (can only delete/create)
+      allow delete: if isSignedIn() && isOwner(resource.data.userId);
+    }
+
+    function isValidProfile(data) {
+      return data.username is string && data.username.size() >= 3 && data.username.size() <= 50 &&
+             (data.bio == null || (data.bio is string && data.bio.size() <= 500)) &&
+             (data.avatarUrl == null || (data.avatarUrl is string && data.avatarUrl.size() <= 1000)) &&
+             data.updatedAt == request.time;
+    }
+
+    match /users/{userId} {
+      allow read: if true; // Profiles are public
+      allow write: if isSignedIn() && isOwner(userId) && isValidProfile(request.resource.data);
+    }
+  }
+}

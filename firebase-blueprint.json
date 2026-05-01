@@ -1,0 +1,40 @@
+{
+  "entities": {
+    "Review": {
+      "title": "Anime Review",
+      "description": "User reviews for anime series and movies",
+      "type": "object",
+      "properties": {
+        "animeId": { "type": "string", "description": "MAL ID of the anime" },
+        "userId": { "type": "string", "description": "Firebase Auth UID" },
+        "username": { "type": "string", "description": "Display name of the reviewer" },
+        "rating": { "type": "number", "description": "Rating from 1 to 5" },
+        "comment": { "type": "string", "description": "Text content of the review" },
+        "createdAt": { "type": "string", "format": "date-time", "description": "Creation timestamp" }
+      },
+      "required": ["animeId", "userId", "username", "rating", "comment", "createdAt"]
+    },
+    "UserProfile": {
+      "title": "User Profile",
+      "description": "Extended user profile information",
+      "type": "object",
+      "properties": {
+        "username": { "type": "string" },
+        "bio": { "type": "string" },
+        "avatarUrl": { "type": "string" },
+        "updatedAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["username", "updatedAt"]
+    }
+  },
+  "firestore": {
+    "reviews/{reviewId}": {
+      "schema": "Review",
+      "description": "Collection of anime reviews"
+    },
+    "users/{userId}": {
+      "schema": "UserProfile",
+      "description": "User profile documents"
+    }
+  }
+}

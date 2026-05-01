@@ -1,0 +1,10 @@
+{
+  "name": "AniFlow",
+  "description": "A high-performance anime exploration and discovery platform with advanced SEO, detailed metadata, and a cinematic download portal experience.",
+  "requestFramePermissions": [],
+  "majorCapabilities": [
+    "Anime Database",
+    "SEO Optimization",
+    "Discovery Portal"
+  ]
+}
